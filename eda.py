@@ -38,3 +38,12 @@ cols_to_drop = missing[missing_percent > 50].index.tolist()
 print(f"\n=== Dropping {len(cols_to_drop)} columns with >50% missing ===")
 df = df.drop(columns=cols_to_drop)
 print(f"New shape: {df.shape}")
+
+df["CREDIT_INCOME_RATIO"] = df["AMT_CREDIT"] / df["AMT_INCOME_TOTAL"]
+df["ANNUITY_INCOME_RATIO"] = df["AMT_ANNUITY"] / df["AMT_INCOME_TOTAL"]
+df["CREDIT_TERM"] = df["AMT_ANNUITY"] / df["AMT_CREDIT"]
+
+print("\n=== New Features vs Default Rate ===")
+print(df.groupby("TARGET")[["CREDIT_INCOME_RATIO", 
+                             "ANNUITY_INCOME_RATIO", 
+                             "AGE_YEARS"]].mean().round(3))
