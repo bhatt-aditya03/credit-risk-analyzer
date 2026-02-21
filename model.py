@@ -44,6 +44,7 @@ print(f"ROC-AUC Score: {auc_score:.4f}")
 joblib.dump(lr_model, "model_lr.pkl")
 print("\nModel saved as model_lr.pkl")
 
+
 from xgboost import XGBClassifier
 
 print("\nTraining XGBoost...")
@@ -63,3 +64,15 @@ print(f"XGBoost ROC-AUC Score: {xgb_auc:.4f}")
 
 joblib.dump(xgb_model, "model_xgb.pkl")
 print("XGBoost model saved as model_xgb.pkl")
+
+
+import numpy as np
+
+sample = X_test.iloc[:5]
+probs = xgb_model.predict_proba(sample)[:, 1]
+scores = (300 + (1 - probs) * 600).astype(int)
+
+print("\n=== Sample Credit Scores ===")
+for i, (prob, score) in enumerate(zip(probs, scores)):
+    status = "REJECTED" if prob > 0.5 else "APPROVED"
+    print(f"Applicant {i+1}: Risk={prob:.3f} | Score={score} | {status}")
