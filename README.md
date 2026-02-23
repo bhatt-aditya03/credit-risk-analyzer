@@ -9,3 +9,7 @@ Python, XGBoost, Scikit-learn, Pandas, FastAPI (coming soon)
 ## Model Performance
 - Logistic Regression baseline: AUC 0.6063
 - XGBoost: AUC 0.6805
+
+## Live API: 
+
+https://credit-risk-analyzer-09qq.onrender.com/docs
