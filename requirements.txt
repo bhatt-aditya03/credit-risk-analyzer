@@ -1,8 +1,6 @@
-fastapi
-uvicorn
+streamlit==1.32.0
 xgboost
 scikit-learn
 joblib
 numpy
 pandas
-streamlit
