@@ -4,7 +4,7 @@ ML-based credit scoring system trained on 307,511 real loan applications.
 Uses XGBoost to predict default risk and generate credit scores (300-900).
 
 ## Tech Stack
-Python, XGBoost, Scikit-learn, Pandas, FastAPI
+Python, XGBoost, Scikit-learn, Pandas, FastAPI, Streamlit
 
 ## Model Performance
 - Logistic Regression baseline: AUC 0.6063
@@ -14,6 +14,6 @@ Python, XGBoost, Scikit-learn, Pandas, FastAPI
 
 https://credit-risk-analyzer-09qq.onrender.com/docs
 
-## Live Webapp (Build using Stramlit):
+## Live Webapp (Built using Stramlit):
 
 https://credit-risk-analyzer-03.streamlit.app
