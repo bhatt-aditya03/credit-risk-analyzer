@@ -54,7 +54,7 @@ Dataset: [Home Credit Default Risk](https://www.kaggle.com/competitions/home-cre
 ---
 
 ## 📂 Project Structure
-
+```
 credit-risk-analyzer/
 ├── app.py              # Streamlit webapp
 ├── main.py             # FastAPI backend
@@ -65,6 +65,7 @@ credit-risk-analyzer/
 ├── notebooks/          # Exploratory analysis & data exploration
 ├── requirements.txt    # Dependencies
 └── screenshot.png      # App preview
+```
 
 ---
 
