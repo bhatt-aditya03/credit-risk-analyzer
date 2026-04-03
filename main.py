@@ -1,56 +1,48 @@
+from pathlib import Path
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import joblib
-import numpy as np
+from features import build_features, compute_score, get_decision
 
-model = joblib.load("model_xgb.pkl")
+# Load model relative to this file — works from any directory
+MODEL_PATH = Path(__file__).parent / "model_xgb.pkl"
+model = joblib.load(MODEL_PATH)
 
-app = FastAPI(title = "Credit Risk Analyzer API")
+app = FastAPI(
+    title="Credit Risk Analyzer API",
+    description="Predicts loan default risk and generates credit scores (300-900).",
+    version="1.0.0"
+)
 
 class ApplicantData(BaseModel):
-    age_years: float
-    years_employed: float
-    amt_income_total: float
-    amt_credit: float
-    amt_annuity: float
-    cnt_children: int
+    age_years: float = Field(..., gt=0, le=100, description="Age in years")
+    years_employed: float = Field(..., ge=0, le=60, description="Years employed")
+    amt_income_total: float = Field(..., gt=0, description="Annual income")
+    amt_credit: float = Field(..., gt=0, description="Loan amount requested")
+    amt_annuity: float = Field(..., gt=0, description="Monthly annuity payment")
+    cnt_children: int = Field(..., ge=0, le=20, description="Number of children")
 
 @app.get("/")
 def root():
-    return {"message": "Credit Risk Analyzer API is running"}
+    return {"message": "Credit Risk Analyzer API is running", "version": "1.0.0"}
 
-@app.post("/predict")
+@app.post("/api/v1/predict")
 def predict_credit_score(data: ApplicantData):
-
-    credit_income_ratio = data.amt_credit / data.amt_income_total
-    annuity_income_ratio = data.amt_annuity / data.amt_income_total
-    credit_term = data.amt_annuity / data.amt_credit
-
-    features = np.array([[
+    features = build_features(
         data.age_years,
         data.years_employed,
         data.amt_income_total,
         data.amt_credit,
         data.amt_annuity,
-        credit_income_ratio,
-        annuity_income_ratio,
-        credit_term,
         data.cnt_children
-    ]])
+    )
 
-    risk_probability = model.predict_proba(features)[0][1]
-
-    credit_score = int(300 + (1 - risk_probability) * 600)
-
-    if risk_probability > 0.5:
-        decision = "REJECTED"
-    elif risk_probability > 0.3:
-        decision = "MANUAL REVIEW"
-    else:
-        decision = "APPROVED"
+    risk_probability = float(model.predict_proba(features)[0][1])
+    credit_score = compute_score(risk_probability)
+    decision = get_decision(risk_probability)
 
     return {
         "credit_score": credit_score,
-        "risk_probability": round(float(risk_probability), 3),
+        "risk_probability": round(risk_probability, 3),
         "decision": decision
     }
