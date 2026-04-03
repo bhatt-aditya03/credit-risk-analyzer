@@ -14,7 +14,7 @@
 
 ## 🎯 What This Does
 
-Traditional credit scoring excludes millions of people who lack formal credit history. This system uses **122 alternative financial features** — employment history, income, annuity, loan amount — to predict default probability and assign a credit score.
+Traditional credit scoring excludes millions of people who lack formal credit history. This system uses **9 key financial features** — employment history, income, annuity ratios, loan amount — extracted from a 122-feature dataset to predict default probability and assign a credit score.
 
 Input applicant details → Get a credit score (300–900) + risk probability + loan decision in real time.
 
@@ -27,15 +27,15 @@ Input applicant details → Get a credit score (300–900) + risk probability + 
 | Logistic Regression | 0.6063 | Baseline |
 | **XGBoost** | **0.6805** | **+12.3% lift over baseline** |
 
-Dataset: [Home Credit Default Risk](https://www.kaggle.com/competitions/home-credit-default-risk/data) — 307,511 loan applications, 122 features.
+Dataset: [Home Credit Default Risk](https://www.kaggle.com/competitions/home-credit-default-risk/data) — 307,511 loan applications, 122 features. Not included in repo due to size.
 
 ---
 
 ## ⚙️ How It Works
 
-1. **Data cleaning** — handles missing values across 122 features
-2. **Feature engineering** — extracts signals from raw financial indicators  
-3. **Model training** — XGBoost classifier predicts default probability
+1. **Data cleaning** — drops sparse columns, fixes sentinel values in employment data
+2. **Feature engineering** — extracts 9 signals: age, employment years, income, credit/income ratio, annuity/income ratio, credit term, children
+3. **Model training** — XGBoost classifier with class imbalance handling (`scale_pos_weight`)
 4. **Score mapping** — `score = 300 + (1 - risk_probability) × 600`
 5. **Serving** — FastAPI backend + Streamlit frontend for real-time scoring
 
@@ -55,22 +55,20 @@ Dataset: [Home Credit Default Risk](https://www.kaggle.com/competitions/home-cre
 
 ## 📂 Project Structure
 
-```
 credit-risk-analyzer/
 ├── app.py              # Streamlit webapp
 ├── main.py             # FastAPI backend
+├── features.py         # Shared feature engineering logic
 ├── model.py            # Model training script
 ├── model_xgb.pkl       # Trained XGBoost model
 ├── model_lr.pkl        # Logistic Regression baseline
 ├── notebooks/          # Exploratory analysis & data exploration
 ├── requirements.txt    # Dependencies
 └── screenshot.png      # App preview
-```
 
 ---
 
 ## 🚀 Run Locally
-
 ```bash
 git clone https://github.com/bhatt-aditya03/credit-risk-analyzer
 cd credit-risk-analyzer
@@ -81,12 +79,13 @@ streamlit run app.py
 
 # Or run FastAPI backend
 uvicorn main:app --reload
+# API available at http://localhost:8000/api/v1/predict
 ```
 
-> **Note:** Dataset not included due to size. Download from [Kaggle](https://www.kaggle.com/competitions/home-credit-default-risk/data) and place in root directory.
+> **Note:** Dataset not included due to size. Download from [Kaggle](https://www.kaggle.com/competitions/home-credit-default-risk/data) and place as `application_train.csv` in the root directory before running `model.py`.
 
 ---
 
 ## 👨‍💻 Author
 
-**Aditya Bhatt** 
+**Aditya Bhatt**
